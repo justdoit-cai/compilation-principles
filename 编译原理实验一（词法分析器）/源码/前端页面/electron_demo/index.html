@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'"
+    />
+    <meta
+            http-equiv="X-Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'"
+    />
+    <title>词法分析器</title>
+</head>
+<body>
+  <h1>编译原理项目一：词法分析器</h1>
+  <p>👋</p>
+  <p id="info"></p>
+  <button id="input">输入文件</button> <span id="hint">未选择文件</span>
+  <br>
+  <br>
+  <input id="output" type="text" placeholder="输出文件名(默认为a.out)"/>
+  <br>
+  <br>
+  <button id="transform">开始转换</button>
+  <script src="render.js"></script>
+</body>
+</html>
+<!--
+1. 用户点击输入文件，打开文件选择框，返回选择的文件路径，读取选择的文件内容，保存到一个变量中
+2. 点击开始转换，查看上面保存了的变量值，并判断用户有没有设定输出文件
+-->

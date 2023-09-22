@@ -1,0 +1,31 @@
+{
+  "name": "electron_demo03",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.just.anchor",
+    "copyright": "anchor",
+    "productName": "词法分析器1.0",
+    "icon": "img.png",
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "extraResources": ["./extra/**"]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^26.2.2"
+  },
+  "dependencies": {
+    "child_process": "^1.0.2"
+  }
+}
