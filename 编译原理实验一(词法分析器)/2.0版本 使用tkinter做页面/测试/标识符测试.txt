@@ -1,0 +1,7 @@
+#include<iostream>
+using namespace std;
+int main(){
+	int a_123 = 1, _abc = 2;
+	cout << a_123 + _abc;
+	return 0;
+}
