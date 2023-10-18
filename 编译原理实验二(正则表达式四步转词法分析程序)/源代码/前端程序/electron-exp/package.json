@@ -1,0 +1,33 @@
+{
+  "name": "electron-exp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.just.anchor",
+    "copyright": "anchor",
+    "productName": "正则表达式转词法分析",
+    "icon": "img.png",
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "extraResources": [
+      "./extra/**"
+    ]
+  },
+  "keywords": [],
+  "author": "Anchor",
+  "license": "ISC",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
+  }
+}
