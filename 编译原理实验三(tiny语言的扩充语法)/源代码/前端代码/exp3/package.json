@@ -1,0 +1,31 @@
+{
+  "name": "exp3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "chcp 65001 & electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.just.anchor",
+    "copyright": "anchor",
+    "productName": "Tiny语言扩充语法实验",
+    "icon": "img.png",
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "extraResources": [
+      "./extra/**"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^27.0.4",
+    "electron-builder": "^24.6.4"
+  }
+}

@@ -1,0 +1,23 @@
+read x;
+read y;
+for i := x downto 1 do
+    s := x % y;
+    s += 1;
+    s := s and 3;
+    for j := 1 to y do
+        m := 1 + (2*x);
+        if (m<>0)
+            write m;
+        else
+            write 0;
+    repeat
+      fact := fact * x;
+      x := x - 1;
+    until x = 0;
+    enddo;
+enddo;
+
+if (not (x + y)*10 >= 100)
+    write 100;
+else
+    write 0;

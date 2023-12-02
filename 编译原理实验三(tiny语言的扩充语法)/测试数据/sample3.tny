@@ -1,0 +1,5 @@
+a := (aa|bb)*c;
+if (a <> 0)
+    write 1;
+else 
+    write 0;
