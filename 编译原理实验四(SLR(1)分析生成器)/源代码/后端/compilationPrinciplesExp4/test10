@@ -1,3 +1,4 @@
-S->aSb
-S->ab
-S->ac
+S->I
+S->o
+I->i()S
+I->i()SeS

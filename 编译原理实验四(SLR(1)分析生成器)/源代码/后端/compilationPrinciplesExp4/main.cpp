@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
     }
     string str = argv[1];
     str = base64_decode(str);
-//    string str = readFile("../test09");
+//    string str = readFile("../test10");
     json ret;
     vector<string> lineList = split(str, "\n");
     for (string line: lineList) {
@@ -307,8 +307,8 @@ void getFollowSet() {
                     if (!isNonTerminator(nextCh)) {
                         ret.find(ch)->second.insert(nextCh);
                     }
-                        // 如果下一个相邻的字符是非终结符就将First(nextCh)加入，
-                        // 并且如果@在First(nextCh)中，则还需要递归的加入并判断下一个nextCh的nextCh的First集，直到到末尾如果当前字符的First集中存在@，就把Follow(leftPart)加入
+                    // 如果下一个相邻的字符是非终结符就将First(nextCh)加入，
+                    // 并且如果@在First(nextCh)中，则还需要递归的加入并判断下一个nextCh的nextCh的First集，直到到末尾如果当前字符的First集中存在@，就把Follow(leftPart)加入
                     else {
                         // 获取下一个元素的first集
                         set<char> s = firstSetMap.find(nextCh)->second;
@@ -337,7 +337,7 @@ void getFollowSet() {
                         ret.find(ch)->second.insert(s.begin(), s.end());
                     }
                 }
-                    // 如果当前的非终结符是最后一个元素就需要直接把生成式左边的终结符的follow集和@加入当前终结符的follow集
+                // 如果当前的非终结符是最后一个元素就需要直接把生成式左边的终结符的follow集和@加入当前终结符的follow集
                 else {
                     ret.find(ch)->second.insert(production.leftPart);
                     ret.find(ch)->second.insert('@');
@@ -351,19 +351,33 @@ void getFollowSet() {
     }
     while (solvedSet.size() < followSetSize) {
         // 检查哪些已经字符的FollowSet已经处理好了，如果处理好了就用这个字符的FollowSet去化简别人的
-        for (auto it1: ret) {
+        for (auto& it1: ret) {
             bool solved = true;
             if (solvedSet.count(it1.first) > 0) {
                 solved = true;
             } else {
+                // 检查当前字符是否已经处理好了
                 for (char ch: it1.second) {
                     if (isNonTerminator(ch)) {
+                        // 如果ch的followSet中也有it1->first就没问题
+                        set<char> tmp = ret.find(ch)->second;
+                        if (tmp.count(it1.first) > 0) {
+                            // 两个字符的followSet各自去掉对方
+                            tmp.erase(it1.first);
+                            it1.second.erase(ch);
+                            // 让另一个字符的followSet加入当前字符的followSet
+                            it1.second.insert(tmp.begin(), tmp.end());
+                            // 让两个字符的followSet一致
+                            ret.find(ch)->second = it1.second;
+                            continue;
+                        }
                         solved = false;
                     }
                 }
             }
             if (solved) {
                 solvedSet.insert(it1.first);
+                // 拿这个字符去化简别的
                 for (auto &it2: ret) {
                     if (it2.second.count(it1.first) > 0) {
                         it2.second.erase(it1.first);
@@ -371,6 +385,8 @@ void getFollowSet() {
                     }
                 }
             }
+            // 修复bug！！！
+            // 处理A->xxxB,B->xxxA的情况，此时虽然A和B的follow集看似都没有处理好，但是其实A和B的follow集就是一样的
         }
     }
     followSetMap = ret;
@@ -395,17 +411,42 @@ string char2str(char ch) {
 void getLr0Dfa() {
     DfaNode firstNode;
     firstNode.projectSet.insert(Project{EXT_START, "." + char2str(productions[0].leftPart)});
-    // 遍历所有产生式，设置起点符号开头的放入起始状态，这里默认加上第一个产生式的左部为起点符号
-    for (Production production: productions) {
-        if (production.leftPart == productions[0].leftPart) {
-            // 注意如果有S->@，则是转换为S->.，而非S->.@
-            if (production.rightPart == "@") {
-                firstNode.projectSet.insert(Project{production.leftPart, "."});
-            } else {
-                firstNode.projectSet.insert(Project{production.leftPart, "." + production.rightPart});
+    // 修复bug！！！
+    // 需要判断起始状态中以S开头的产生式的右部是不是以非终结符开头，如果是还需要加上那个非终结符的产生式，这里我搞忘了起始状态的这种情况。
+    // 例如：S->A,A->B。此时不能忽略A开头的产生式
+    // 修复后的代码
+    set<char> notAddBakSet; // 直接在遍历set的时候增加和删除set中的元素会出问题，所以这里需要搞一个备份的set
+    set<char> notAddSet;
+    set<char> isAddSet;
+    notAddSet.insert(productions[0].leftPart);
+    notAddBakSet.insert(productions[0].leftPart);
+    while (!notAddSet.empty()) {
+        for (char ch : notAddSet) {
+            isAddSet.insert(ch);
+            notAddBakSet.erase(ch);
+            for (Production production: productions) {
+                if (production.leftPart == ch) {
+                    // 注意如果有S->@，则是转换为S->.，而非S->.@
+                    if (production.rightPart == "@") {
+                        firstNode.projectSet.insert(Project{production.leftPart, "."});
+                    } else {
+                        firstNode.projectSet.insert(Project{production.leftPart, "." + production.rightPart});
+                        if(isNonTerminator(production.rightPart[0])) {
+                            // 处理了就不用再处理了
+                            if (isAddSet.count(production.rightPart[0]) > 0){
+                                continue;
+                            }
+                            notAddBakSet.insert(production.rightPart[0]);
+                        }
+                    }
+                }
             }
         }
+
+        notAddSet = notAddBakSet;
+        notAddBakSet.clear();
     }
+
     dfaNodeList.push_back(firstNode);
     // 由起始状态延申至其它状态
     workQueue.push(0);
@@ -538,7 +579,7 @@ void checkSlr1() {
                         if (intersection.size() != 0) {
                             isSlr1 = false;
                             errResult = "状态" + to_string(i) + "中的项目" + project1.leftPart + "->" + project1.rightPart + "和项目"
-                                    + project2.leftPart + "->" + project2.rightPart + "发生了冲突! Follow(" + project1.leftPart + ")和Follow(" + project2.rightPart + ")的交集不为空!";
+                                    + project2.leftPart + "->" + project2.rightPart + "发生了冲突! Follow(" + project1.leftPart + ")和Follow(" + project2.leftPart + ")的交集不为空!";
                         }
                     }
                         // 判断第一点
@@ -548,7 +589,7 @@ void checkSlr1() {
                             if (followSet1.count(dotNextChar2) > 0) {
                                 isSlr1 = false;
                                 errResult = "状态" + to_string(i) + "中的项目" + project1.leftPart + "->" + project1.rightPart + "和项目"
-                                            + project2.leftPart + "->" + project2.rightPart + "发生了冲突! " + dotNextChar2 + "是一个终结符，并且其在Follow(" + project1.rightPart + ")中!";
+                                            + project2.leftPart + "->" + project2.rightPart + "发生了冲突! " + dotNextChar2 + "是一个终结符，并且其在Follow(" + project1.leftPart + ")中!";
                             }
                         }
                     }

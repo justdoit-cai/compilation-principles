@@ -1,5 +1,12 @@
-S->L=R
-S->R
-L->*R
-L->i
-R->L
+S->C
+S->A
+S->B
+C->i
+A->V=E
+B->W=T
+V->i
+V->a
+E->V
+E->n
+W->i
+T->b

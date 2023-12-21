@@ -56,7 +56,47 @@ B->d
 ![img_6.png](imgs/img_6.png)
 ![img_7.png](imgs/img_7.png)
 
-# 不足
+## 测试四
+```text
+E->E+T
+E->E-T
+E->T
+T->T*F
+T->T/F
+T->F
+F->(E)
+F->n
+```
+![img_16.png](img_16.png)
+![img_17.png](img_17.png)
+![img_8.png](imgs/img_8.png)
 
-如果文法存在 `A->B`, `B->A` 这种循环依赖时，求 `First` 和 `Follow` 集合的时候会导致死循环。这里默认输入的文法不存在这种情况。
+## 测试五（测试非SLR1文法的报错）
+```text
+S->C
+S->A
+S->B
+C->i
+A->V=E
+B->W=T
+V->i
+V->a
+E->V
+E->n
+W->i
+T->b
+```
+![img_9.png](img_9.png)
+![img_10.png](img_10.png)
+![img_12.png](img_12.png)
 
+## 测试六（测试非SLR1文法的报错）
+```text
+S->I
+S->o
+I->i()S
+I->i()SeS
+```
+![img_13.png](img_13.png)
+![img_14.png](img_14.png)
+![img_15.png](img_15.png)
